@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Fluency Quest</title>
+  <style>
+    :root {
+      --bg1: #eef8ff;
+      --bg2: #dbeeff;
+      --bg3: #f7fbff;
+      --blue: #2d6cdf;
+      --blue-2: #71b7ff;
+      --blue-3: #d8efff;
+      --navy: #14325f;
+      --text: #25364d;
+      --muted: #61748f;
+      --white: #ffffff;
+      --line: #a9c9ee;
+      --green: #58c084;
+      --yellow: #ffd86b;
+      --pink: #f7a6c8;
+      --red: #df5c72;
+      --shadow: 0 18px 50px rgba(34, 91, 150, 0.16);
+      --soft-shadow: 0 10px 25px rgba(34, 91, 150, 0.12);
+      --radius: 22px;
+      --xpWidth: 0%;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(113,183,255,.42), transparent 32%),
+        radial-gradient(circle at 85% 10%, rgba(247,166,200,.28), transparent 26%),
+        linear-gradient(135deg, var(--bg1), var(--bg2) 45%, #fff6fb);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .22;
+      background-image:
+        linear-gradient(rgba(45,108,223,.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(45,108,223,.12) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, black, transparent 86%);
+    }
+
+    button, input, textarea { font: inherit; }
+
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 18px 46px;
+      position: relative;
+    }
+
+    .top-window {
+      border: 2px solid #244b83;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: rgba(255,255,255,.82);
+      backdrop-filter: blur(12px);
+    }
+
+    .xp-titlebar {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 12px 9px 16px;
+      background: linear-gradient(180deg, #63b8ff, #2d6cdf 52%, #1d52b4);
+      color: white;
+      border-bottom: 2px solid #173b75;
+      text-shadow: 0 1px 0 rgba(0,0,0,.24);
+    }
+
+    .window-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+
+    .pixel-icon {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 2px;
+      padding: 2px;
+      background: rgba(255,255,255,.25);
+      border: 1px solid rgba(255,255,255,.75);
+      border-radius: 4px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);
+    }
+
+    .pixel-icon span { border-radius: 1px; background: white; opacity: .95; }
+    .pixel-icon span:nth-child(2), .pixel-icon span:nth-child(5), .pixel-icon span:nth-child(9) { background: #ffd86b; }
+    .pixel-icon span:nth-child(4), .pixel-icon span:nth-child(8) { background: #baf0ff; }
+
+    .win-buttons { display: flex; gap: 7px; align-items: center; }
+    .win-button {
+      width: 22px;
+      height: 22px;
+      border: 1px solid rgba(40,58,94,.55);
+      border-radius: 4px;
+      background: linear-gradient(180deg, #fff, #dbefff);
+      color: #315d9c;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: inset 0 1px rgba(255,255,255,.8);
+    }
+
+    .status-area {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      border-bottom: 1px solid rgba(106,158,218,.42);
+      background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(240,248,255,.82));
+    }
+
+    .status-left h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.25rem, 3vw, 2.1rem);
+      color: var(--navy);
+    }
+
+    .status-left p { margin: 0; color: var(--muted); line-height: 1.45; }
+
+    .xp-box {
+      min-width: min(360px, 100%);
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(104,160,223,.65);
+      border-radius: 18px;
+      padding: 12px;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .xp-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: baseline;
+      margin-bottom: 8px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .xp-meta small { font-weight: 700; color: var(--muted); }
+
+    .xp-track {
+      height: 14px;
+      border-radius: 999px;
+      background: #d7eafa;
+      border: 1px solid rgba(45,108,223,.25);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .xp-fill {
+      height: 100%;
+      width: var(--xpWidth);
+      background: linear-gradient(90deg, #7ec9ff, #2d6cdf, #a68cff);
+      border-radius: inherit;
+      transition: width .65s cubic-bezier(.2,.9,.2,1);
+      position: relative;
+    }
+
+    .xp-fill::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,.45), transparent);
+      animation: shimmer 2s linear infinite;
+    }
+
+    @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+
+    .stack-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .stack-chip {
+      border: 1px solid rgba(45,108,223,.28);
+      background: #f6fbff;
+      color: #42617f;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: .8rem;
+      font-weight: 800;
+    }
+
+    .stack-chip.earned {
+      background: linear-gradient(180deg, #e4fff0, #c9f7dc);
+      color: #16633b;
+      border-color: rgba(60,170,101,.38);
+      box-shadow: 0 6px 14px rgba(42,154,82,.14);
+    }
+
+    .content {
+      padding: 18px;
+    }
+
+    .window-card {
+      border: 2px solid rgba(36,75,131,.78);
+      background: rgba(255,255,255,.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: popIn .42s ease both;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(10px) scale(.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .mini-titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 42px;
+      padding: 9px 12px 9px 16px;
+      background: linear-gradient(180deg, #f8fcff, #d5ecff);
+      border-bottom: 1px solid rgba(36,75,131,.35);
+      color: var(--navy);
+      font-weight: 900;
+    }
+
+    .mini-titlebar .label {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
+      gap: 18px;
+      padding: 18px;
+      align-items: stretch;
+    }
+
+    .hero-image {
+      min-height: 430px;
+      border: 1px solid rgba(45,108,223,.22);
+      border-radius: 22px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,216,107,.38), transparent 24%),
+        radial-gradient(circle at 80% 30%, rgba(247,166,200,.28), transparent 20%),
+        linear-gradient(135deg, #f6fbff, #d9efff);
+      box-shadow: var(--soft-shadow);
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .image-fallback {
+      padding: 28px;
+      text-align: center;
+      color: var(--navy);
+      max-width: 560px;
+    }
+
+    .image-fallback .emoji {
+      font-size: clamp(3.3rem, 8vw, 5.8rem);
+      filter: drop-shadow(0 10px 18px rgba(45,108,223,.15));
+      margin-bottom: 14px;
+    }
+
+    .image-fallback h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      line-height: 1.02;
+      letter-spacing: -.03em;
+    }
+
+    .image-fallback p {
+      margin: 0 auto;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .rules-card {
+      background: rgba(255,255,255,.84);
+      border: 1px solid rgba(45,108,223,.26);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--soft-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .rules-card h2, .section-title {
+      margin: 0;
+      color: var(--navy);
+      letter-spacing: -.02em;
+    }
+
+    .rules-card p { margin: 0; line-height: 1.55; color: var(--muted); }
+
+    .step-list {
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .step-list li {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+      background: #f7fbff;
+      border: 1px solid rgba(45,108,223,.15);
+      border-radius: 14px;
+      padding: 9px;
+      color: #445a78;
+      line-height: 1.35;
+    }
+
+    .step-list b {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      color: white;
+      background: linear-gradient(180deg, #73bdff, #2d6cdf);
+      box-shadow: 0 6px 12px rgba(45,108,223,.23);
+    }
+
+    .audio-panel {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #f8fcff, #e4f4ff);
+      border: 1px solid rgba(45,108,223,.23);
+    }
+
+    .audio-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .audio-row audio {
+      width: 100%;
+      height: 38px;
+      accent-color: var(--blue);
+    }
+
+    .btn {
+      border: 1px solid rgba(24,80,160,.42);
+      background: linear-gradient(180deg, #ffffff, #d8efff 52%, #b5dfff);
+      color: #174178;
+      border-radius: 14px;
+      padding: 11px 15px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: inset 0 1px rgba(255,255,255,.8), 0 8px 18px rgba(33,94,170,.13);
+      transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: inset 0 1px rgba(255,255,255,.8), 0 12px 24px rgba(33,94,170,.2); }
+    .btn:active { transform: translateY(1px); }
+    .btn.primary {
+      background: linear-gradient(180deg, #77c6ff, #2d6cdf 55%, #204faa);
+      color: white;
+      text-shadow: 0 1px rgba(0,0,0,.2);
+      border-color: #1a4b9d;
+    }
+    .btn.soft { background: linear-gradient(180deg, #fff, #f4fbff); color: var(--navy); }
+    .btn.green { background: linear-gradient(180deg, #dcffe9, #8fe9b1); color: #135d36; border-color: rgba(37,133,74,.38); }
+    .btn.danger { background: linear-gradient(180deg, #fff6f8, #ffd7df); color: #983144; border-color: rgba(192,75,97,.38); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    .home-layout {
+      padding: clamp(20px, 4vw, 38px);
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .home-copy h2 {
+      margin: 0 0 12px;
+      font-size: clamp(2.2rem, 6vw, 4.9rem);
+      line-height: .92;
+      color: var(--navy);
+      letter-spacing: -.06em;
+    }
+
+    .home-copy p {
+      max-width: 760px;
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--muted);
+      margin: 0 0 18px;
+    }
+
+    .level-map {
+      display: grid;
+      gap: 9px;
+    }
+
+    .map-item {
+      display: grid;
+      grid-template-columns: 38px 1fr auto;
+      gap: 11px;
+      align-items: center;
+      padding: 11px;
+      background: rgba(255,255,255,.84);
+      border: 1px solid rgba(45,108,223,.18);
+      border-radius: 16px;
+    }
+
+    .map-number {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: #e6f4ff;
+      color: var(--blue);
+      font-weight: 900;
+    }
+
+    .map-item.done .map-number { background: #d9ffea; color: #167142; }
+    .map-title { font-weight: 900; color: var(--navy); }
+    .map-subtitle { font-size: .82rem; color: var(--muted); margin-top: 2px; }
+    .map-status { font-weight: 900; color: var(--muted); font-size: .86rem; }
+    .map-item.done .map-status { color: #167142; }
+    .map-item.locked { opacity: .58; filter: grayscale(.1); }
+
+    .quiz-shell {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .sticky-listening {
+      position: sticky;
+      top: 10px;
+      z-index: 4;
+      border-radius: 20px;
+      border: 1px solid rgba(45,108,223,.27);
+      background: rgba(247,252,255,.88);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 30px rgba(34,91,150,.13);
+      padding: 12px;
+    }
+
+    .quiz-intro {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 14px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #f9fdff, #eef8ff);
+      border: 1px solid rgba(45,108,223,.16);
+    }
+
+    .quiz-intro h2 { margin: 0 0 4px; color: var(--navy); }
+    .quiz-intro p { margin: 0; color: var(--muted); }
+
+    .question-card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(45,108,223,.23);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: var(--soft-shadow);
+      animation: slideUp .4s ease both;
+    }
+
+    .question-card:nth-child(2) { animation-delay: .03s; }
+    .question-card:nth-child(3) { animation-delay: .06s; }
+    .question-card:nth-child(4) { animation-delay: .09s; }
+    .question-card:nth-child(5) { animation-delay: .12s; }
+
+    @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .question-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      color: var(--navy);
+      font-weight: 900;
+    }
+
+    .question-type {
+      font-size: .78rem;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #eaf6ff;
+      border: 1px solid rgba(45,108,223,.2);
+      color: #24558d;
+      white-space: nowrap;
+    }
+
+    .question-text { font-size: 1.02rem; line-height: 1.45; margin: 0 0 12px; }
+
+    .options { display: grid; gap: 9px; }
+
+    .option {
+      position: relative;
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 10px;
+      align-items: start;
+      cursor: pointer;
+      padding: 12px;
+      border-radius: 15px;
+      border: 1px solid rgba(45,108,223,.18);
+      background: #fbfdff;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+
+    .option:hover { transform: translateX(2px); border-color: rgba(45,108,223,.38); background: #f2f9ff; }
+    .option input { margin-top: 2px; accent-color: var(--blue); }
+    .option.correct { background: #eafff1; border-color: rgba(45,174,100,.45); }
+    .option.wrong { background: #fff0f3; border-color: rgba(223,92,114,.45); }
+    .option.dim { opacity: .67; }
+
+    .feedback {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-weight: 800;
+    }
+    .feedback.show { display: block; }
+    .feedback.good { background: #eafff1; color: #12633a; border: 1px solid rgba(45,174,100,.35); }
+    .feedback.bad { background: #fff0f3; color: #943247; border: 1px solid rgba(223,92,114,.35); }
+
+    .score-panel {
+      display: none;
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(45,108,223,.2);
+      background:
+        radial-gradient(circle at top left, rgba(255,216,107,.28), transparent 24%),
+        linear-gradient(180deg, #ffffff, #eef8ff);
+      box-shadow: var(--soft-shadow);
+    }
+    .score-panel.show { display: block; animation: popIn .35s ease both; }
+    .score-panel h3 { margin: 0 0 8px; color: var(--navy); font-size: 1.35rem; }
+    .score-panel p { margin: 0 0 12px; color: var(--muted); line-height: 1.45; }
+
+    .level5-layout {
+      padding: 18px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .expression-board {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 9px;
+      padding: 14px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #f9fdff, #eaf6ff);
+      border: 1px solid rgba(45,108,223,.2);
+    }
+
+    .expr-chip {
+      background: rgba(255,255,255,.9);
+      border: 1px solid rgba(45,108,223,.18);
+      padding: 9px 10px;
+      border-radius: 14px;
+      font-size: .92rem;
+      color: #31506c;
+    }
+
+    .writing-card {
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(45,108,223,.23);
+      border-radius: 22px;
+      padding: 16px;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .writing-card h3 { margin: 0 0 8px; color: var(--navy); }
+    .writing-card p { margin: 0 0 12px; color: var(--muted); line-height: 1.5; }
+
+    textarea {
+      width: 100%;
+      min-height: 230px;
+      resize: vertical;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(45,108,223,.32);
+      background: #fbfdff;
+      color: var(--text);
+      line-height: 1.6;
+      outline: none;
+      box-shadow: inset 0 2px 9px rgba(45,108,223,.08);
+    }
+    textarea:focus { border-color: rgba(45,108,223,.65); box-shadow: 0 0 0 4px rgba(113,183,255,.18); }
+
+    .writing-stats {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+
+    .stat-pill {
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: #f1f8ff;
+      border: 1px solid rgba(45,108,223,.18);
+      font-weight: 800;
+      color: var(--navy);
+      font-size: .88rem;
+    }
+
+    .detected-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 10px 0 0;
+    }
+
+    .detected-list span {
+      background: #eafff1;
+      border: 1px solid rgba(45,174,100,.26);
+      color: #14663b;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: .8rem;
+      font-weight: 800;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      display: grid;
+      gap: 8px;
+    }
+
+    .toast-msg {
+      background: rgba(19,50,95,.95);
+      color: white;
+      padding: 12px 14px;
+      border-radius: 14px;
+      box-shadow: 0 16px 35px rgba(19,50,95,.28);
+      animation: toastIn .25s ease both;
+      font-weight: 800;
+    }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .xp-float {
+      position: fixed;
+      z-index: 50;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: #0d68d4;
+      background: white;
+      border: 1px solid rgba(45,108,223,.22);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 1.2rem;
+      font-weight: 1000;
+      box-shadow: var(--shadow);
+      pointer-events: none;
+      animation: xpPop 1s ease forwards;
+    }
+
+    @keyframes xpPop {
+      0% { opacity: 0; transform: translate(-50%, -35%) scale(.85); }
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+      100% { opacity: 0; transform: translate(-50%, -120%) scale(.94); }
+    }
+
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      top: -20px;
+      z-index: 45;
+      pointer-events: none;
+      animation: fall 1.8s linear forwards;
+    }
+    @keyframes fall { to { transform: translateY(110vh) rotate(540deg); opacity: .25; } }
+
+    .small-note {
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.45;
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 900px) {
+      .status-area, .home-layout, .level-grid { grid-template-columns: 1fr; }
+      .xp-box { min-width: 0; }
+      .hero-image { min-height: 320px; }
+      .expression-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      .app { padding: 14px 10px 32px; }
+      .content, .quiz-shell, .level5-layout, .level-grid { padding: 12px; }
+      .expression-board { grid-template-columns: 1fr; }
+      .home-copy h2 { font-size: 2.35rem; }
+      .window-title { font-size: .9rem; }
+      .status-area { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="top-window">
+      <header class="xp-titlebar">
+        <div class="window-title">
+          <div class="pixel-icon" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          Smart Fluency Quest.exe
+        </div>
+        <div class="win-buttons" aria-hidden="true">
+          <div class="win-button">_</div>
+          <div class="win-button">□</div>
+          <div class="win-button">×</div>
+        </div>
+      </header>
+
+      <section class="status-area">
+        <div class="status-left">
+          <h1>Smart Fluency Quest</h1>
+          <p id="studentLine">A listening game for richer, more natural English.</p>
+          <div class="stack-row" id="stackRow"></div>
+        </div>
+        <div class="xp-box" aria-live="polite">
+          <div class="xp-meta"><span id="xpText">0 / 260 XP</span><small id="rankText">Curious Beginner</small></div>
+          <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+        </div>
+      </section>
+
+      <main class="content" id="appRoot"></main>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const TOTAL_XP = 260;
+    const params = new URLSearchParams(window.location.search);
+    const student = (params.get('student') || 'demo').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '') || 'demo';
+    const storageKey = `smartFluencyQuestProgress_${student}`;
+
+    const levels = [
+      {
+        id: 'level1',
+        number: 1,
+        title: 'What We Consume Says a Lot About Us',
+        stack: 'Content Habits',
+        emoji: '📚',
+        image: 'images/level-1-context.png',
+        audio: 'audio/level-1-reading-habits.mp3',
+        description: 'Listen for ideas about online content, reading habits, manga, comments, curiosity, and repeated exposure.',
+        questions: [
+          {
+            type: 'Vocabulary',
+            prompt: 'In the audio, what does “the format changed more than the habit itself” mean?',
+            options: [
+              'People stopped reading because books became boring.',
+              'People still read, but they read in different formats now.',
+              'People only read academic texts nowadays.',
+              'People read less because they cannot understand long texts.'
+            ],
+            answer: 1
+          },
+          {
+            type: 'Vocabulary',
+            prompt: 'What does “keeps you hooked” mean in the audio?',
+            options: [
+              'It makes you feel confused.',
+              'It makes you feel judged.',
+              'It makes you want to continue.',
+              'It makes you stop paying attention.'
+            ],
+            answer: 2
+          },
+          {
+            type: 'Listening',
+            prompt: 'Choose exactly what you heard:',
+            options: [
+              'I end up reading online discussions when I want someone’s personal perspective.',
+              'I end up reading online descriptions when I want someone’s personal protection.',
+              'I end up reading online decisions when I want someone’s personal prediction.',
+              'I end up reading online directions when I want someone’s personal correction.'
+            ],
+            answer: 0
+          },
+          {
+            type: 'Listening',
+            prompt: 'Choose exactly what you heard:',
+            options: [
+              'Through repeated explosion, you start observing vocabulary.',
+              'Through repeated exposure, you start absorbing vocabulary.',
+              'Through rapid exposure, you stop absorbing vocabulary.',
+              'Through repeated expression, you start avoiding vocabulary.'
+            ],
+            answer: 1
+          }
+        ]
+      },
+      {
+        id: 'level2',
+        number: 2,
+        title: 'The Way People Act When Nobody Is Explaining Anything',
+        stack: 'Human Behavior',
+        emoji: '🧠',
+        image: 'images/level-2-context.png',
+        audio: 'audio/level-2-human-behavior.mp3',
+        description: 'Listen for theories, strange behavior, unfinished stories, deeper reasons, and hidden context.',
+        questions: [
+          {
+            type: 'Vocabulary',
+            prompt: 'What does “behind the scenes” mean in this context?',
+            options: [
+              'Something happening secretly or privately, not visible to everyone.',
+              'Something happening in a movie theater.',
+              'Something that is always obvious.',
+              'Something related only to work meetings.'
+            ],
+            answer: 0
+          },
+          {
+            type: 'Vocabulary',
+            prompt: 'What does “our theories can feel like facts” suggest?',
+            options: [
+              'Our theories are always correct.',
+              'We should never create theories.',
+              'We sometimes believe our interpretations too quickly.',
+              'Facts are less important than feelings.'
+            ],
+            answer: 2
+          },
+          {
+            type: 'Listening',
+            prompt: 'Choose exactly what you heard:',
+            options: [
+              'Maybe it’s because our brain doesn’t like unfinished stories.',
+              'Maybe it’s because our brain doesn’t like unfiltered stories.',
+              'Maybe it’s because our pain doesn’t like unfinished stories.',
+              'Maybe it’s because our brain doesn’t hide unfinished stories.'
+            ],
+            answer: 0
+          },
+          {
+            type: 'Listening',
+            prompt: 'Choose exactly what you heard:',
+            options: [
+              'There might be a cheaper reason behind their behavior.',
+              'There might be a deeper reason behind their behavior.',
+              'There might be a darker season behind their behavior.',
+              'There might be a different reason behind their believer.'
+            ],
+            answer: 1
+          }
+        ]
+      },
+      {
+        id: 'level3',
+        number: 3,
+        title: 'The Evidence Keeps Changing',
+        stack: 'Theory Builder',
+        emoji: '🕵️',
+        image: 'images/level-3-context.png',
+        audio: 'audio/level-3-changing-evidence.mp3',
+        description: 'Listen for clues, changing evidence, speculation in the past, and final conclusions.',
+        questions: [
+          {
+            type: 'Vocabulary',
+            prompt: 'What does “planned everything in advance” mean?',
+            options: [
+              'She made decisions before the situation happened.',
+              'She improvised everything at the last minute.',
+              'She forgot to organize important details.',
+              'She followed someone else’s plan without thinking.'
+            ],
+            answer: 0
+          },
+          {
+            type: 'Vocabulary',
+            prompt: 'What does “it points to something emotional” mean?',
+            options: [
+              'It proves she was completely happy.',
+              'It suggests an emotional reason may be involved.',
+              'It shows there was no emotional connection.',
+              'It means the clue is useless.'
+            ],
+            answer: 1
+          },
+          {
+            type: 'Listening',
+            prompt: 'Choose exactly what you heard:',
+            options: [
+              'She bought a one-week ticket to Thailand.',
+              'She bought a one-way ticket to Thailand.',
+              'She bought a wrong-way ticket to Thailand.',
+              'She bought a runway ticket to Thailand.'
+            ],
+            answer: 1
+          },
+          {
+            type: 'Listening',
+            prompt: 'Choose exactly what you heard:',
+            options: [
+              'The details were too organized to be random.',
+              'The details were too recognized to be random.',
+              'The details were too organized to be written.',
+              'The details were too organized to be real.'
+            ],
+            answer: 0
+          }
+        ]
+      },
+      {
+        id: 'level4',
+        number: 4,
+        title: 'AI, Work, and the Future of Being Human',
+        stack: 'Tech & Future',
+        emoji: '💻',
+        image: 'images/level-4-context.png',
+        audio: 'audio/level-4-ai-work-future.mp3',
+        description: 'Listen for AI, data analysis, automation, interpretation, context, and future skills.',
+        questions: [
+          {
+            type: 'Vocabulary',
+            prompt: 'What does “repetitive enough to be automated” mean?',
+            options: [
+              'So creative that only humans can do it.',
+              'So repeated and predictable that a system can do it.',
+              'So emotional that machines cannot understand it.',
+              'So rare that nobody needs to do it.'
+            ],
+            answer: 1
+          },
+          {
+            type: 'Vocabulary',
+            prompt: 'What does “technical skills may not be enough” suggest?',
+            options: [
+              'Technical skills are useless.',
+              'Professionals also need interpretation, communication, and critical thinking.',
+              'People should stop learning technology.',
+              'Only emotional intelligence matters.'
+            ],
+            answer: 1
+          },
+          {
+            type: 'Listening',
+            prompt: 'Choose exactly what you heard:',
+            options: [
+              'A dashboard can show what happened, but a human still needs to explain why it matters.',
+              'A dashboard can show what happens, but a human still needs to explain why it matches.',
+              'A dashboard can show what happened, but a human still needs to explain why it matters less.',
+              'A dashboard can show what happened, but a human still needs to complain why it matters.'
+            ],
+            answer: 0
+          },
+          {
+            type: 'Listening',
+            prompt: 'Choose exactly what you heard:',
+            options: [
+              'People might become less social because everything can be done online.',
+              'People might become less special because everything can be done online.',
+              'People might become less social because every meeting is online.',
+              'People might become more social because everything can be done online.'
+            ],
+            answer: 0
+          }
+        ]
+      }
+    ];
+
+    const level5 = {
+      id: 'level5',
+      number: 5,
+      title: 'Expression Power Challenge',
+      stack: 'Smart Writing',
+      emoji: '✨',
+      image: 'images/level-5-context.png',
+      challenges: [
+        {
+          type: 'Situation',
+          prompt: 'You want to explain what kind of content you usually consume after work. Which group is the best?',
+          options: [
+            ['I’ve always been into...', 'Lately, I’ve been consuming more...', 'It depends on my mood.'],
+            ['Everything points to...', 'She must have...', 'Based on this clue...'],
+            ['The pacing was slow at first.', 'She might have...', 'AI might change the way people work.'],
+            ['This suggests that...', 'She may have...', 'The dialogue feels natural.']
+          ],
+          answer: 0
+        },
+        {
+          type: 'Situation',
+          prompt: 'You are talking about a series, manga, documentary, or true crime video that was very engaging. Which group is the best?',
+          options: [
+            ['Some jobs may disappear faster than people expect.', 'It depends on my mood.', 'She must have...'],
+            ['It keeps me hooked.', 'I got emotionally attached to the story.', 'The pacing was slow at first.'],
+            ['One possible explanation is...', 'Based on this clue...', 'She may have...'],
+            ['I tend to...', 'I end up...', 'AI might change the way people work.']
+          ],
+          answer: 1
+        },
+        {
+          type: 'Situation',
+          prompt: 'You are analyzing someone’s strange behavior and creating a theory. Which group is the best?',
+          options: [
+            ['The dialogue feels natural.', 'I like things that feel...', 'I’ve always been into...'],
+            ['It keeps me hooked.', 'The pacing was slow at first.', 'I got emotionally attached to the story.'],
+            ['One possible explanation is...', 'There might be a deeper reason behind it.', 'Everything points to...'],
+            ['Lately, I’ve been consuming more...', 'It depends on my mood.', 'I end up...']
+          ],
+          answer: 2
+        },
+        {
+          type: 'Situation',
+          prompt: 'You are talking about AI, data analysis, jobs, and the future of work. Which group is the best?',
+          options: [
+            ['AI might change the way people work.', 'Some jobs may disappear faster than people expect.', 'Technical skills may not be enough.'],
+            ['She might have missed her flight.', 'The dog was missing.', 'Nobody knew where he was.'],
+            ['The pacing was slow at first.', 'The dialogue feels natural.', 'It keeps me hooked.'],
+            ['I got emotionally attached to the story.', 'Based on this clue...', 'She must have...']
+          ],
+          answer: 0
+        }
+      ]
+    };
+
+    const expressionBoard = [
+      'I’ve always been into...',
+      'Lately, I’ve been consuming more...',
+      'I tend to...',
+      'I end up...',
+      'It depends on my mood.',
+      'I like things that feel...',
+      'It keeps me hooked.',
+      'I got emotionally attached to the story.',
+      'The pacing was slow at first.',
+      'The dialogue feels natural.',
+      'That changed the way I saw...',
+      'This suggests that...',
+      'Maybe it’s not that..., it’s more that...',
+      'It says a lot about...',
+      'There might be a deeper reason behind it.',
+      'One possible explanation is...',
+      'Everything points to...',
+      'At first, I thought...',
+      'But now that I know..., I think...',
+      'Based on this clue...',
+      'She may have...',
+      'She might have...',
+      'She must have...',
+      'AI might change the way people work.',
+      'Some jobs may disappear faster than people expect.'
+    ];
+
+    const expressionPatterns = [
+      { label: 'I’ve always been into...', regex: /i[’']ve always been into/i },
+      { label: 'Lately, I’ve been consuming more...', regex: /lately,? i[’']ve been consuming more/i },
+      { label: 'I tend to...', regex: /i tend to/i },
+      { label: 'I end up...', regex: /i end up/i },
+      { label: 'It depends on my mood.', regex: /it depends on my mood/i },
+      { label: 'I like things that feel...', regex: /i like things that feel/i },
+      { label: 'It keeps me hooked.', regex: /keeps me hooked/i },
+      { label: 'I got emotionally attached...', regex: /emotionally attached/i },
+      { label: 'The pacing was slow at first.', regex: /pacing was slow at first/i },
+      { label: 'The dialogue feels natural.', regex: /dialogue feels natural/i },
+      { label: 'That changed the way I saw...', regex: /changed the way i saw/i },
+      { label: 'This suggests that...', regex: /this suggests that/i },
+      { label: 'Maybe it’s not that...', regex: /maybe it[’']s not that/i },
+      { label: 'It says a lot about...', regex: /it says a lot about/i },
+      { label: 'There might be a deeper reason...', regex: /there might be a deeper reason/i },
+      { label: 'One possible explanation is...', regex: /one possible explanation is/i },
+      { label: 'Everything points to...', regex: /everything points to/i },
+      { label: 'At first, I thought...', regex: /at first,? i thought/i },
+      { label: 'But now that I know...', regex: /but now that i know/i },
+      { label: 'Based on this clue...', regex: /based on this clue/i },
+      { label: 'may have', regex: /\bmay have\b/i },
+      { label: 'might have', regex: /\bmight have\b/i },
+      { label: 'must have', regex: /\bmust have\b/i },
+      { label: 'AI might change...', regex: /ai might change/i },
+      { label: 'Some jobs may disappear...', regex: /some jobs may disappear/i }
+    ];
+
+    function defaultProgress() {
+      return {
+        completed: {},
+        scores: {},
+        answers: {},
+        writing: '',
+        writingComplete: false,
+        level5ChallengeComplete: false,
+        visited: {}
+      };
+    }
+
+    let progress = loadProgress();
+
+    function loadProgress() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey));
+        return Object.assign(defaultProgress(), saved || {});
+      } catch (e) {
+        return defaultProgress();
+      }
+    }
+
+    function saveProgress() {
+      localStorage.setItem(storageKey, JSON.stringify(progress));
+      updateStatus();
+    }
+
+    function getXP() {
+      let xp = 0;
+      Object.values(progress.scores || {}).forEach(score => xp += Number(score) || 0);
+      if (progress.writingComplete) xp += 60;
+      return Math.min(xp, TOTAL_XP);
+    }
+
+    function getRank(xp) {
+      if (xp >= 220) return 'Smart Fluent Thinker';
+      if (xp >= 150) return 'Theory Builder';
+      if (xp >= 80) return 'Pattern Finder';
+      return 'Curious Beginner';
+    }
+
+    function isUnlocked(index) {
+      if (index === 0) return true;
+      if (index < 4) return !!progress.completed[levels[index - 1].id];
+      return !!progress.completed[levels[3].id];
+    }
+
+    function updateStatus() {
+      const xp = getXP();
+      const pct = Math.round((xp / TOTAL_XP) * 100);
+      document.documentElement.style.setProperty('--xpWidth', pct + '%');
+      document.getElementById('xpText').textContent = `${xp} / ${TOTAL_XP} XP`;
+      document.getElementById('rankText').textContent = getRank(xp);
+      document.getElementById('studentLine').textContent = `Player: ${student} · Listen, choose, earn XP, unlock skill stacks.`;
+
+      const stackRow = document.getElementById('stackRow');
+      const stacks = [...levels, level5].map(l => ({ id: l.id, label: l.stack }));
+      stackRow.innerHTML = stacks.map(s => {
+        const earned = s.id === 'level5' ? progress.writingComplete : progress.completed[s.id];
+        return `<span class="stack-chip ${earned ? 'earned' : ''}">${earned ? '✓' : '○'} ${s.label}</span>`;
+      }).join('');
+    }
+
+    function toast(message) {
+      const wrap = document.getElementById('toast');
+      const el = document.createElement('div');
+      el.className = 'toast-msg';
+      el.textContent = message;
+      wrap.appendChild(el);
+      setTimeout(() => el.remove(), 3200);
+    }
+
+    function xpFloat(amount) {
+      const el = document.createElement('div');
+      el.className = 'xp-float';
+      el.textContent = `+${amount} XP`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1000);
+    }
+
+    function confettiBurst() {
+      const colors = ['#77c6ff', '#2d6cdf', '#ffd86b', '#f7a6c8', '#58c084'];
+      for (let i = 0; i < 34; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.animationDelay = (Math.random() * .28) + 's';
+        c.style.transform = `rotate(${Math.random() * 180}deg)`;
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 2100);
+      }
+    }
+
+    function renderHome() {
+      progress.visited.home = true;
+      saveProgress();
+      const xp = getXP();
+      const root = document.getElementById('appRoot');
+      root.innerHTML = `
+        <section class="window-card">
+          <div class="mini-titlebar"><span class="label">🪟 Main Menu</span><span>XP style · Clean mode</span></div>
+          <div class="home-layout">
+            <div class="home-copy">
+              <h2>Listen. Notice. Level up.</h2>
+              <p>This training is built like a small game. You will listen to four audios, answer vocabulary and listening questions, unlock stacks, and finish with a free writing mission using smart expressions.</p>
+              <div class="button-row">
+                <button class="btn primary" onclick="goToNextAvailable()">▶ ${xp > 0 ? 'Continue Quest' : 'Start Level 1'}</button>
+                <button class="btn soft" onclick="exportProgress()">📋 Copy Progress</button>
+                <button class="btn danger" onclick="resetProgress()">Reset</button>
+              </div>
+              <p class="small-note" style="margin-top:14px;">Tip: the written transcripts are not shown. You can replay the audio anytime during the quiz.</p>
+            </div>
+            <div class="level-map">
+              ${renderLevelMap()}
+            </div>
+          </div>
+        </section>
+      `;
+      updateStatus();
+    }
+
+    function renderLevelMap() {
+      const all = [...levels, level5];
+      return all.map((l, idx) => {
+        const done = l.id === 'level5' ? progress.writingComplete : progress.completed[l.id];
+        const locked = !isUnlocked(idx);
+        const score = l.id === 'level5'
+          ? (progress.writingComplete ? 'Quest done' : (progress.level5ChallengeComplete ? 'Writing left' : (locked ? 'Locked' : 'Ready')))
+          : (progress.scores[l.id] ? `${progress.scores[l.id]} XP` : (done ? 'Done' : (locked ? 'Locked' : 'Ready')));
+        return `
+          <div class="map-item ${done ? 'done' : ''} ${locked ? 'locked' : ''}">
+            <div class="map-number">${done ? '✓' : l.number}</div>
+            <div>
+              <div class="map-title">${l.title}</div>
+              <div class="map-subtitle">${l.stack}</div>
+            </div>
+            <div class="map-status">${score}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function goToNextAvailable() {
+      for (let i = 0; i < levels.length; i++) {
+        if (!progress.completed[levels[i].id] && isUnlocked(i)) return renderLevelIntro(i);
+      }
+      if (!progress.completed[level5.id] && isUnlocked(4)) return renderLevel5();
+      renderLevel5();
+    }
+
+    function renderAudio(level) {
+      return `
+        <div class="audio-panel">
+          <strong>🎧 Listening button</strong>
+          <div class="audio-row">
+            <audio controls preload="metadata" src="${level.audio}"></audio>
+          </div>
+          <span class="small-note">Replay is allowed. Reading the transcript is not part of this quest.</span>
+        </div>
+      `;
+    }
+
+    function renderLevelIntro(index) {
+      if (!isUnlocked(index)) { toast('Finish the previous level first.'); return renderHome(); }
+      const level = levels[index];
+      progress.visited[level.id] = true;
+      saveProgress();
+      const root = document.getElementById('appRoot');
+      root.innerHTML = `
+        <section class="window-card">
+          <div class="mini-titlebar">
+            <span class="label">${level.emoji} Level ${level.number}: ${level.title}</span>
+            <span>${level.stack}</span>
+          </div>
+          <div class="level-grid">
+            <div class="hero-image">
+              <img src="${level.image}" alt="Context image for ${level.title}" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+              <div class="image-fallback hidden">
+                <div class="emoji">${level.emoji}</div>
+                <h2>${level.title}</h2>
+                <p>Add your contextual image later using this path:<br><strong>${level.image}</strong></p>
+              </div>
+            </div>
+            <aside class="rules-card">
+              <h2>Mission Rules</h2>
+              <p>${level.description}</p>
+              <ul class="step-list">
+                <li><b>1</b><span>Listen once before answering anything.</span></li>
+                <li><b>2</b><span>Go to the quiz page and replay the audio if needed.</span></li>
+                <li><b>3</b><span>Answer 2 vocabulary questions and 2 direct listening questions.</span></li>
+                <li><b>4</b><span>Earn XP and unlock the next stack.</span></li>
+              </ul>
+              ${renderAudio(level)}
+              <div class="button-row">
+                <button class="btn primary" onclick="renderQuiz(${index})">Go to Quiz →</button>
+                <button class="btn soft" onclick="renderHome()">← Menu</button>
+              </div>
+            </aside>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderQuiz(index) {
+      if (!isUnlocked(index)) { toast('Finish the previous level first.'); return renderHome(); }
+      const level = levels[index];
+      const submitted = progress.completed[level.id];
+      const savedAnswers = progress.answers[level.id] || [];
+      const root = document.getElementById('appRoot');
+      root.innerHTML = `
+        <section class="window-card">
+          <div class="mini-titlebar">
+            <span class="label">${level.emoji} Level ${level.number} Quiz</span>
+            <span>${submitted ? 'Completed' : 'Active'}</span>
+          </div>
+          <div class="quiz-shell">
+            <div class="sticky-listening">${renderAudio(level)}</div>
+            <div class="quiz-intro">
+              <div>
+                <h2>${level.title}</h2>
+                <p>Choose the best answer. Each correct answer gives you 10 XP.</p>
+              </div>
+              <div class="button-row">
+                <button class="btn soft" onclick="renderLevelIntro(${index})">← Back</button>
+                <button class="btn soft" onclick="renderHome()">Menu</button>
+              </div>
+            </div>
+            <form id="quizForm">
+              ${level.questions.map((q, qi) => renderQuestion(q, qi, level.id, savedAnswers[qi], submitted)).join('')}
+              <div class="footer-actions">
+                <div class="button-row">
+                  <button type="button" class="btn primary" onclick="submitQuiz('${level.id}')" ${submitted ? 'disabled' : ''}>Check Answers</button>
+                  ${submitted ? `<button type="button" class="btn soft" onclick="retryLevel('${level.id}', ${index})">Try Again</button>` : ''}
+                </div>
+                <button type="button" class="btn green" onclick="goAfterLevel(${index})" ${submitted ? '' : 'disabled'}>Next →</button>
+              </div>
+            </form>
+            <div class="score-panel ${submitted ? 'show' : ''}" id="scorePanel">
+              <h3>${submitted ? `Level complete · ${progress.scores[level.id] || 0} XP` : 'Score'}</h3>
+              <p>${submitted ? getScoreMessage(progress.scores[level.id] || 0, 40) : ''}</p>
+            </div>
+          </div>
+        </section>
+      `;
+      if (submitted) markAnswers(level.id);
+    }
+
+    function renderQuestion(q, qi, levelId, savedAnswer, submitted) {
+      return `
+        <div class="question-card" data-question-index="${qi}">
+          <div class="question-head"><span class="question-type">${q.type}</span><span>Question ${qi + 1}</span></div>
+          <p class="question-text">${q.prompt}</p>
+          <div class="options">
+            ${q.options.map((opt, oi) => {
+              const text = Array.isArray(opt) ? opt.map(x => `• ${x}`).join('<br>') : opt;
+              return `
+                <label class="option" data-option-index="${oi}">
+                  <input type="radio" name="${levelId}_q${qi}" value="${oi}" ${Number(savedAnswer) === oi ? 'checked' : ''} ${submitted ? 'disabled' : ''} />
+                  <span>${text}</span>
+                </label>
+              `;
+            }).join('')}
+          </div>
+          <div class="feedback" id="feedback_${levelId}_${qi}"></div>
+        </div>
+      `;
+    }
+
+    function submitQuiz(levelId) {
+      const level = [...levels, level5].find(l => l.id === levelId);
+      const questions = level.questions || level.challenges;
+      const selections = [];
+      let allAnswered = true;
+      questions.forEach((q, qi) => {
+        const selected = document.querySelector(`input[name="${levelId}_q${qi}"]:checked`);
+        if (!selected) allAnswered = false;
+        selections[qi] = selected ? Number(selected.value) : null;
+      });
+      if (!allAnswered) {
+        toast('Answer all questions before checking.');
+        return;
+      }
+
+      let correct = 0;
+      questions.forEach((q, qi) => {
+        if (selections[qi] === q.answer) correct++;
+      });
+      const score = correct * 10;
+      const previous = progress.scores[levelId] || 0;
+      progress.answers[levelId] = selections;
+      progress.scores[levelId] = score;
+      if (levelId === 'level5') {
+        progress.level5ChallengeComplete = true;
+      } else {
+        progress.completed[levelId] = true;
+      }
+      saveProgress();
+      markAnswers(levelId);
+      document.getElementById('scorePanel').classList.add('show');
+      document.getElementById('scorePanel').innerHTML = `<h3>Level complete · ${score} XP</h3><p>${getScoreMessage(score, 40)}</p>`;
+      document.querySelectorAll(`#quizForm input`).forEach(i => i.disabled = true);
+      const checkBtn = document.querySelector(`#quizForm .btn.primary`);
+      if (checkBtn) checkBtn.disabled = true;
+      const nextBtn = document.querySelector(`#quizForm .btn.green`);
+      if (nextBtn) nextBtn.disabled = false;
+      const gained = Math.max(score - previous, 0);
+      if (gained > 0) xpFloat(gained);
+      if (score >= 30) confettiBurst();
+      toast(`You earned ${score} XP in this level.`);
+    }
+
+    function getScoreMessage(score, max) {
+      if (score === max) return 'Perfect listening. You unlocked this stack with style.';
+      if (score >= max * .75) return 'Strong result. You understood the main details and key expressions.';
+      if (score >= max * .5) return 'Good start. Replay the audio and notice the similar sounds.';
+      return 'Replay the audio and try again. Similar sounds are part of the challenge.';
+    }
+
+    function markAnswers(levelId) {
+      const level = [...levels, level5].find(l => l.id === levelId);
+      const questions = level.questions || level.challenges;
+      const selections = progress.answers[levelId] || [];
+      questions.forEach((q, qi) => {
+        const card = document.querySelector(`[data-question-index="${qi}"]`);
+        if (!card) return;
+        card.querySelectorAll('.option').forEach(label => {
+          const oi = Number(label.dataset.optionIndex);
+          label.classList.remove('correct', 'wrong', 'dim');
+          if (oi === q.answer) label.classList.add('correct');
+          else if (oi === selections[qi]) label.classList.add('wrong');
+          else label.classList.add('dim');
+        });
+        const fb = document.getElementById(`feedback_${levelId}_${qi}`);
+        if (fb) {
+          const good = selections[qi] === q.answer;
+          fb.className = `feedback show ${good ? 'good' : 'bad'}`;
+          fb.textContent = good ? 'Correct. Nice listening.' : `Not this one. The best answer is option ${String.fromCharCode(65 + q.answer)}.`;
+        }
+      });
+    }
+
+    function retryLevel(levelId, index) {
+      if (levelId === 'level5') {
+        progress.level5ChallengeComplete = false;
+      } else {
+        delete progress.completed[levelId];
+      }
+      delete progress.scores[levelId];
+      delete progress.answers[levelId];
+      saveProgress();
+      if (levelId === 'level5') renderLevel5();
+      else renderQuiz(index);
+      toast('Level reset. Try again.');
+    }
+
+    function goAfterLevel(index) {
+      if (index < 3) return renderLevelIntro(index + 1);
+      return renderLevel5();
+    }
+
+    function renderLevel5() {
+      if (!isUnlocked(4)) { toast('Finish Level 4 first.'); return renderHome(); }
+      const submitted = progress.level5ChallengeComplete || progress.completed[level5.id];
+      const savedAnswers = progress.answers[level5.id] || [];
+      const root = document.getElementById('appRoot');
+      root.innerHTML = `
+        <section class="window-card">
+          <div class="mini-titlebar">
+            <span class="label">${level5.emoji} Level 5: ${level5.title}</span>
+            <span>Final Mission</span>
+          </div>
+          <div class="level5-layout">
+            <div class="level-grid" style="padding:0;">
+              <div class="hero-image" style="min-height:300px;">
+                <img src="${level5.image}" alt="Context image for Level 5" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+                <div class="image-fallback hidden">
+                  <div class="emoji">${level5.emoji}</div>
+                  <h2>Expression Power</h2>
+                  <p>Add your contextual image later using this path:<br><strong>${level5.image}</strong></p>
+                </div>
+              </div>
+              <aside class="rules-card">
+                <h2>Final Rules</h2>
+                <p>Choose the best expression groups for each situation. Then write your own smart opinion text.</p>
+                <ul class="step-list">
+                  <li><b>1</b><span>Use the Expression Board.</span></li>
+                  <li><b>2</b><span>Complete 4 vocabulary-in-context challenges.</span></li>
+                  <li><b>3</b><span>Write your final text using useful expressions.</span></li>
+                  <li><b>4</b><span>Finish the quest and unlock your final rank.</span></li>
+                </ul>
+                <div class="button-row"><button class="btn soft" onclick="renderHome()">← Menu</button></div>
+              </aside>
+            </div>
+
+            <div>
+              <h2 class="section-title">Expression Board</h2>
+              <p class="small-note">Use these expressions to choose answers and write your final text.</p>
+              <div class="expression-board">${expressionBoard.map(e => `<div class="expr-chip">${e}</div>`).join('')}</div>
+            </div>
+
+            <form id="quizForm">
+              ${level5.challenges.map((q, qi) => renderQuestion(q, qi, level5.id, savedAnswers[qi], submitted)).join('')}
+              <div class="footer-actions">
+                <div class="button-row">
+                  <button type="button" class="btn primary" onclick="submitQuiz('${level5.id}')" ${submitted ? 'disabled' : ''}>Check Challenges</button>
+                  ${submitted ? `<button type="button" class="btn soft" onclick="retryLevel('${level5.id}', 4)">Try Challenges Again</button>` : ''}
+                </div>
+              </div>
+            </form>
+            <div class="score-panel ${submitted ? 'show' : ''}" id="scorePanel">
+              <h3>${submitted ? `Challenge complete · ${progress.scores[level5.id] || 0} XP` : 'Score'}</h3>
+              <p>${submitted ? getScoreMessage(progress.scores[level5.id] || 0, 40) : ''}</p>
+            </div>
+
+            <div class="writing-card">
+              <h3>Final Writing Mission</h3>
+              <p><strong>Topic:</strong> How do the things we consume, the technology we use, and the mysteries we follow shape the way we think?</p>
+              <p>Write around <strong>180–250 words</strong>. Try to use at least <strong>8 expressions</strong> from the board. Your writing is saved automatically in this browser.</p>
+              <textarea id="writingBox" placeholder="Start writing here...">${escapeHTML(progress.writing || '')}</textarea>
+              <div class="writing-stats">
+                <span class="stat-pill" id="wordCount">0 words</span>
+                <span class="stat-pill" id="exprCount">0 expressions detected</span>
+                <span class="stat-pill">Writing XP: ${progress.writingComplete ? '60 / 60' : '0 / 60'}</span>
+              </div>
+              <div class="detected-list" id="detectedList"></div>
+              <div class="button-row">
+                <button class="btn green" onclick="completeWriting()" type="button" ${progress.writingComplete ? 'disabled' : ''}>Submit Final Writing</button>
+                <button class="btn soft" onclick="copyWriting()" type="button">Copy Writing</button>
+              </div>
+              <p class="small-note" id="writingHint" style="margin-top:10px;"></p>
+            </div>
+          </div>
+        </section>
+      `;
+      if (submitted) markAnswers(level5.id);
+      const box = document.getElementById('writingBox');
+      box.addEventListener('input', () => {
+        progress.writing = box.value;
+        saveProgress();
+        updateWritingStats();
+      });
+      updateWritingStats();
+    }
+
+    function escapeHTML(str) {
+      return String(str).replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+    }
+
+    function wordCount(text) {
+      return (text.trim().match(/\b[\w’'-]+\b/g) || []).length;
+    }
+
+    function detectExpressions(text) {
+      return expressionPatterns.filter(p => p.regex.test(text)).map(p => p.label);
+    }
+
+    function updateWritingStats() {
+      const box = document.getElementById('writingBox');
+      if (!box) return;
+      const words = wordCount(box.value);
+      const detected = detectExpressions(box.value);
+      document.getElementById('wordCount').textContent = `${words} words`;
+      document.getElementById('exprCount').textContent = `${detected.length} expressions detected`;
+      document.getElementById('detectedList').innerHTML = detected.map(d => `<span>${d}</span>`).join('');
+      const hint = document.getElementById('writingHint');
+      if (progress.writingComplete) {
+        hint.textContent = 'Final writing submitted. Quest complete.';
+      } else if (words < 180) {
+        hint.textContent = `You need about ${180 - words} more words to reach the recommended minimum.`;
+      } else if (words > 250) {
+        hint.textContent = 'You passed 250 words. That is okay for practice, but try to be concise.';
+      } else if (detected.length < 8) {
+        hint.textContent = `Nice length. Try to include ${8 - detected.length} more expression(s) from the board.`;
+      } else {
+        hint.textContent = 'Great. You reached the writing goal and used several target expressions.';
+      }
+    }
+
+    function completeWriting() {
+      const box = document.getElementById('writingBox');
+      const words = wordCount(box.value);
+      const detected = detectExpressions(box.value);
+      progress.writing = box.value;
+      if (words < 120) {
+        toast('Write a little more before submitting.');
+        updateWritingStats();
+        return;
+      }
+      progress.writingComplete = true;
+      progress.completed[level5.id] = true;
+      saveProgress();
+      xpFloat(60);
+      confettiBurst();
+      toast(`Quest complete. ${detected.length} expressions detected.`);
+      renderLevel5();
+    }
+
+    function copyWriting() {
+      const box = document.getElementById('writingBox');
+      navigator.clipboard.writeText(box.value || '').then(() => toast('Writing copied.'));
+    }
+
+    function exportProgress() {
+      const xp = getXP();
+      const report = [
+        `Smart Fluency Quest Progress`,
+        `Player: ${student}`,
+        `XP: ${xp}/${TOTAL_XP}`,
+        `Rank: ${getRank(xp)}`,
+        '',
+        'Scores:',
+        ...[...levels, level5].map(l => `- Level ${l.number}: ${progress.scores[l.id] || 0} XP ${l.id === 'level5' ? (progress.writingComplete ? '(completed)' : progress.level5ChallengeComplete ? '(writing left)' : '(not completed)') : (progress.completed[l.id] ? '(completed)' : '(not completed)')}`),
+        '',
+        'Final Writing:',
+        progress.writing || '(empty)'
+      ].join('\n');
+      navigator.clipboard.writeText(report).then(() => toast('Progress copied.'));
+    }
+
+    function resetProgress() {
+      if (!confirm('Reset all progress for this player?')) return;
+      localStorage.removeItem(storageKey);
+      progress = defaultProgress();
+      toast('Progress reset.');
+      renderHome();
+    }
+
+    updateStatus();
+    renderHome();
+  </script>
+</body>
+</html>
