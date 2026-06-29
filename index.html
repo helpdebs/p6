@@ -414,6 +414,8 @@
     }
     .btn.soft { background: linear-gradient(180deg, #fff, #f4fbff); color: var(--navy); }
     .btn.green { background: linear-gradient(180deg, #dcffe9, #8fe9b1); color: #135d36; border-color: rgba(37,133,74,.38); }
+    .btn.lilac { background: linear-gradient(180deg, #f8f2ff, #d9c5ff 54%, #b996ff); color: #3f2778; border-color: rgba(126,92,204,.45); }
+    .btn.lilac:hover { filter: saturate(1.04); }
     .btn.danger { background: linear-gradient(180deg, #fff6f8, #ffd7df); color: #983144; border-color: rgba(192,75,97,.38); }
     .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
@@ -1253,6 +1255,7 @@
               <h2>Listen. Notice. Level up.</h2>
               <p>This training is built like a small game. You will listen to four audios, answer vocabulary and listening questions, unlock stacks, and finish with a free writing mission using smart expressions.</p>
               <div class="button-row">
+                <a class="btn lilac" href="smart_english_expression_bank.pdf" download>⬇ Baixar PDF completo</a>
                 <button class="btn primary" onclick="goToNextAvailable()">▶ ${xp > 0 ? 'Continue Quest' : 'Start Level 1'}</button>
                 <button class="btn soft" onclick="exportProgress()">📋 Copy Progress</button>
                 <button class="btn danger" onclick="resetProgress()">Reset</button>
